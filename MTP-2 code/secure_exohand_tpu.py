@@ -9,7 +9,7 @@ import scipy.io
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import normalize
-import keras
+from tensorflow import keras
 from keras.utils import to_categorical
 from sklearn.utils import shuffle
 from scipy.stats import kurtosis
