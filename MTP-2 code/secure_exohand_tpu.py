@@ -110,7 +110,7 @@ def load_tflite_model(modelpath):
                                      experimental_delegates=[tflite.load_delegate('libedgetpu.so.1')])
     interpreter.allocate_tensors()
     return interpreter
-
+"""
 interpreter_noquant = tf.lite.Interpreter("log_model_no_quant.tflite")
 interpreter_noquant.allocate_tensors()
 
@@ -134,7 +134,7 @@ y_pred_noquant = np.array([1 if x > 0.5 else 0 for x in y_pred_noquant])
 print("TPU accuracy (noquant): ", 100 * np.sum(y_pred_noquant == y_test) / len(y_pred_noquant), "%")
 print("F1 score (noquant): ", f1_score(y_test, y_pred_noquant))
 
-"""
+
 interpreter_hybridquant = tf.lite.Interpreter("log_model_hybrid_quant.tflite")
 interpreter_hybridquant.allocate_tensors()
 
@@ -157,7 +157,7 @@ print("---Pred time (hybrid):  %s seconds ---" % (time.time() - start_time))
 y_pred_hybrid = np.array([1 if x > 0.5 else 0 for x in y_pred_hybrid])
 print("TPU accuracy (hybrid): ", 100 * np.sum(y_pred_hybrid == y_test) / len(y_pred_hybrid), "%")
 print("F1 score (hybrid): ", f1_score(y_test, y_pred_hybrid))
-"""
+
 
 interpreter_int = tf.lite.Interpreter("log_model_int_quant.tflite")
 interpreter_int.allocate_tensors()
@@ -181,7 +181,7 @@ print("---Pred time (int quant):  %s seconds ---" % (time.time() - start_time))
 y_pred_int = np.array([1 if x > 0.5 else 0 for x in y_pred_int])
 print("TPU accuracy (int quant): ", 100 * np.sum(y_pred_int == y_test) / len(y_pred_int), "%")
 print("F1 score (int quant): ", f1_score(y_test, y_pred_int))
-
+"""
 
 """
 Exohand
