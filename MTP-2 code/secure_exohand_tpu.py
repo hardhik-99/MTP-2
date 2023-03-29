@@ -6,7 +6,6 @@ Created on Mon Feb  6 22:54:06 2023
 """
 
 import scipy.io
-import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 import pywt
