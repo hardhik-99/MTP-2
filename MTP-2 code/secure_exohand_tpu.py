@@ -9,8 +9,6 @@ import scipy.io
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import normalize
-from tensorflow import keras
-from keras.utils import to_categorical
 from sklearn.utils import shuffle
 from scipy.stats import kurtosis
 
@@ -43,7 +41,6 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 import tflite_runtime.interpreter as tflite
-
 """
 Log Anomaly Detection
 """
