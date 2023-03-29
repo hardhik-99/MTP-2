@@ -41,6 +41,7 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 import tflite_runtime.interpreter as tflite
+
 """
 Log Anomaly Detection
 """
@@ -111,7 +112,7 @@ def load_tflite_model(modelpath):
     interpreter.allocate_tensors()
     return interpreter
 
-interpreter_noquant = tf.lite.Interpreter("log_model_no_quant.tflite")
+interpreter_noquant = load_tflite_model("log_model_no_quant.tflite")
 interpreter_noquant.allocate_tensors()
 
 y_pred_noquant = []
@@ -134,8 +135,7 @@ y_pred_noquant = np.array([1 if x > 0.5 else 0 for x in y_pred_noquant])
 print("TPU accuracy (noquant): ", 100 * np.sum(y_pred_noquant == y_test) / len(y_pred_noquant), "%")
 print("F1 score (noquant): ", f1_score(y_test, y_pred_noquant))
 
-
-interpreter_hybridquant = tf.lite.Interpreter("log_model_hybrid_quant.tflite")
+interpreter_hybridquant = load_tflite_model("log_model_hybrid_quant.tflite")
 interpreter_hybridquant.allocate_tensors()
 
 y_pred_hybrid = []
@@ -158,8 +158,7 @@ y_pred_hybrid = np.array([1 if x > 0.5 else 0 for x in y_pred_hybrid])
 print("TPU accuracy (hybrid): ", 100 * np.sum(y_pred_hybrid == y_test) / len(y_pred_hybrid), "%")
 print("F1 score (hybrid): ", f1_score(y_test, y_pred_hybrid))
 
-
-interpreter_int = tf.lite.Interpreter("log_model_int_quant.tflite")
+interpreter_int = load_tflite_model("log_model_int_quant.tflite")
 interpreter_int.allocate_tensors()
 
 y_pred_int = []
@@ -311,7 +310,7 @@ y_test = tf.keras.utils.to_categorical(y_test, num_classes=3)
 x_test = np.asarray(x_test).astype(np.float32)
 y_test = np.asarray(y_test).astype(np.int32)
 
-interpreter_noquant = tf.lite.Interpreter("exo_model_no_quant.tflite")
+interpreter_noquant = load_tflite_model("exo_model_no_quant.tflite")
 interpreter_noquant.allocate_tensors()
 
 y_pred_noquant = []
@@ -332,7 +331,7 @@ print("---Pred time (noquant):  %s seconds ---" % (time.time() - start_time))
 
 print("TPU accuracy (noquant): ", 100 * np.sum(y_pred_noquant == np.argmax(y_test, axis=1)) / len(y_pred_noquant), "%")
 
-interpreter_hybridquant = tf.lite.Interpreter("exo_model_hybrid_quant.tflite")
+interpreter_hybridquant = load_tflite_model("exo_model_hybrid_quant.tflite")
 interpreter_hybridquant.allocate_tensors()
 
 y_pred_hybrid = []
@@ -353,7 +352,7 @@ print("---Pred time (hybrid):  %s seconds ---" % (time.time() - start_time))
 
 print("TPU accuracy (hybrid): ", 100 * np.sum(y_pred_hybrid == np.argmax(y_test, axis=1)) / len(y_pred_hybrid), "%")
 
-interpreter_int = tf.lite.Interpreter("exo_model_int_quant.tflite")
+interpreter_int = load_tflite_model("exo_model_int_quant.tflite")
 interpreter_int.allocate_tensors()
 
 y_pred_int = []
