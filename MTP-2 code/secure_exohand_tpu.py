@@ -8,7 +8,6 @@ Created on Mon Feb  6 22:54:06 2023
 import scipy.io
 import pandas as pd
 import numpy as np
-import pywt
 from sklearn.preprocessing import normalize
 import keras
 from keras.utils import to_categorical
