@@ -402,7 +402,7 @@ start_idx = np.random.randint(0,1791)
 x_test_log_int = x_test_log[start_idx:start_idx+9,:,:]
 
 start_time = time.time()
-for i in tqdm(range(x_test.shape[0])):
+for i in range(x_test.shape[0]):
     
     #log anomaly
     x_test_sample = x_test_log_int[i]
