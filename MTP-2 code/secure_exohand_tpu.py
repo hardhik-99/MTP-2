@@ -172,7 +172,7 @@ def tflite_predict(interpreter, data):
 start_time = time.time()
 for i in tqdm(range(x_test.shape[0])):
     x_test_sample = x_test[i]
-    pred = tflite_predict(interpreter_noquant, x_test_sample)
+    pred = tflite_predict(interpreter_int, x_test_sample)
     y_pred_int.append(pred[0][0])
 
 print("---Pred time (int quant):  %s seconds ---" % (time.time() - start_time))
@@ -380,25 +380,33 @@ print("TPU accuracy (int quant): ", 100 * np.sum(y_pred_int == np.argmax(y_test,
 Integrated secure framework for hand grasp classification
 """
 
-interpreter_log_int = load_tflite_model("log_model_int_quant.tflite")
-interpreter_log_int.allocate_tensors()
+interpreter_log_hybrid = load_tflite_model("log_model_hybrid_quant.tflite")
+interpreter_log_hybrid.allocate_tensors()
 
 y_pred_int = []
 
-def tflite_predict(interpreter, data):
+def tflite_predict_log(interpreter, data):
     input_data = data.reshape((1, max_seq_len, low_dim_len)).astype(np.float32)
     interpreter.set_tensor(interpreter.get_input_details()[0]['index'], input_data)
     interpreter.invoke()
     return interpreter.get_tensor(interpreter.get_output_details()[0]['index'])
 
-x_test_log = np.shuffle(x_test_log)
+def tflite_predict(interpreter, data):
+    input_data = data.reshape((1, num_feats)).astype(np.float32)
+    interpreter.set_tensor(interpreter.get_input_details()[0]['index'], input_data)
+    interpreter.invoke()
+    return interpreter.get_tensor(interpreter.get_output_details()[0]['index'])
+
+start_idx = np.random.randint(0,1791)
+    
+x_test_log_int = x_test_log[start_idx:start_idx+9,:,:]
 
 start_time = time.time()
 for i in tqdm(range(x_test.shape[0])):
     
     #log anomaly
-    x_test_sample = x_test_log[i]
-    pred = tflite_predict(interpreter_log_int, x_test_sample)
+    x_test_sample = x_test_log_int[i]
+    pred = tflite_predict_log(interpreter_log_hybrid, x_test_sample)
     y_pred_log_int = pred[0][0]
     
     #hand grasp
@@ -406,14 +414,5 @@ for i in tqdm(range(x_test.shape[0])):
         print("Anomaly detected")
     else:
         x_test_sample = x_test[i]
-        pred = tflite_predict(interpreter_int, x_test_sample)    
+        pred = tflite_predict(interpreter_hybridquant, x_test_sample)    
         print("Hand grasp type: ", np.argmax(pred))
-    
-    
-
-print("---Pred time (int quant):  %s seconds ---" % (time.time() - start_time))
-    
-y_pred_int = np.array([1 if x > 0.5 else 0 for x in y_pred_int])
-print("TPU accuracy (int quant): ", 100 * np.sum(y_pred_int == y_test) / len(y_pred_int), "%")
-print("F1 score (int quant): ", f1_score(y_test, y_pred_int))
-
