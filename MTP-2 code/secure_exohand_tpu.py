@@ -181,6 +181,9 @@ y_pred_int = np.array([1 if x > 0.5 else 0 for x in y_pred_int])
 print("TPU accuracy (int quant): ", 100 * np.sum(y_pred_int == y_test) / len(y_pred_int), "%")
 print("F1 score (int quant): ", f1_score(y_test, y_pred_int))
 
+x_test_log = x_test
+y_test_log = y_test
+
 
 """
 Exohand
@@ -366,9 +369,51 @@ def tflite_predict(interpreter, data):
 start_time = time.time()
 for i in tqdm(range(x_test.shape[0])):
     x_test_sample = x_test[i]
-    pred = tflite_predict(interpreter_noquant, x_test_sample)
+    pred = tflite_predict(interpreter_int, x_test_sample)
     y_pred_int.append(np.argmax(pred))
 
 print("---Pred time (int quant):  %s seconds ---" % (time.time() - start_time))
 
 print("TPU accuracy (int quant): ", 100 * np.sum(y_pred_int == np.argmax(y_test, axis=1)) / len(y_pred_int), "%")
+
+"""
+Integrated secure framework for hand grasp classification
+"""
+
+interpreter_log_int = load_tflite_model("log_model_int_quant.tflite")
+interpreter_log_int.allocate_tensors()
+
+y_pred_int = []
+
+def tflite_predict(interpreter, data):
+    input_data = data.reshape((1, max_seq_len, low_dim_len)).astype(np.float32)
+    interpreter.set_tensor(interpreter.get_input_details()[0]['index'], input_data)
+    interpreter.invoke()
+    return interpreter.get_tensor(interpreter.get_output_details()[0]['index'])
+
+x_test_log = np.shuffle(x_test_log)
+
+start_time = time.time()
+for i in tqdm(range(x_test.shape[0])):
+    
+    #log anomaly
+    x_test_sample = x_test_log[i]
+    pred = tflite_predict(interpreter_log_int, x_test_sample)
+    y_pred_log_int = pred[0][0]
+    
+    #hand grasp
+    if y_pred_log_int > 0.5:
+        print("Anomaly detected")
+    else:
+        x_test_sample = x_test[i]
+        pred = tflite_predict(interpreter_int, x_test_sample)    
+        print("Hand grasp type: ", np.argmax(pred))
+    
+    
+
+print("---Pred time (int quant):  %s seconds ---" % (time.time() - start_time))
+    
+y_pred_int = np.array([1 if x > 0.5 else 0 for x in y_pred_int])
+print("TPU accuracy (int quant): ", 100 * np.sum(y_pred_int == y_test) / len(y_pred_int), "%")
+print("F1 score (int quant): ", f1_score(y_test, y_pred_int))
+
